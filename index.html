@@ -2,22 +2,65 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Personas registradas</title>
+  <title>Login Personas</title>
 </head>
 <body>
-  <h1>Personas registradas</h1>
-  <ul id="lista"></ul>
 
-  <script>
-    fetch("https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app/personas.json")
-      .then(res => res.json())
-      .then(data => {
-        const lista = document.getElementById("lista");
-        for (let id in data) {
-          const p = data[id];
-          lista.innerHTML += `<li>${p.nombre} - ${p.edad} años</li>`;
-        }
-      });
-  </script>
+<h2 id="titulo">Login</h2>
+
+<div id="login">
+  <input id="email" placeholder="Email"><br><br>
+  <input id="password" type="password" placeholder="Contraseña"><br><br>
+  <button onclick="login()">Entrar</button>
+</div>
+
+<ul id="lista" style="display:none;"></ul>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get } 
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+  const firebaseConfig = {
+    databaseURL: "https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  window.login = function () {
+    const email = document.getElementById("email").value;
+    const pass = document.getElementById("password").value;
+
+    signInWithEmailAndPassword(auth, email, pass)
+      .catch(err => alert("Login incorrecto"));
+  };
+
+  onAuthStateChanged(auth, user => {
+    if (user) {
+      document.getElementById("login").style.display = "none";
+      document.getElementById("titulo").innerText = "Personas registradas";
+      cargarDatos();
+    }
+  });
+
+  function cargarDatos() {
+    const lista = document.getElementById("lista");
+    lista.style.display = "block";
+    lista.innerHTML = "";
+
+    get(ref(db, "personas")).then(snapshot => {
+      const data = snapshot.val();
+      for (let id in data) {
+        const p = data[id];
+        lista.innerHTML += `<li>${p.nombre} - ${p.edad} años</li>`;
+      }
+    });
+  }
+</script>
+
 </body>
 </html>
