@@ -23,30 +23,31 @@
   import { getDatabase, ref, get } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // 🔴 CONFIGURACIÓN COMPLETA (OBLIGATORIA)
+  // 🔐 TU CONFIGURACIÓN REAL DE FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyAqRKw0f831pD_8R-AMX2vJJY4M5mpBz6o",
-  authDomain: "personas-firebase.firebaseapp.com",
-  databaseURL: "https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "personas-firebase",
-  storageBucket: "personas-firebase.firebasestorage.app",
-  messagingSenderId: "950578634794",
-  appId: "1:950578634794:web:bb1f48b283e97443d06353",
-  measurementId: "G-TCCHG56HEL"
+    authDomain: "personas-firebase.firebaseapp.com",
+    databaseURL: "https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "personas-firebase",
+    storageBucket: "personas-firebase.firebasestorage.app",
+    messagingSenderId: "950578634794",
+    appId: "1:950578634794:web:bb1f48b283e97443d06353"
   };
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
 
+  // Login
   window.login = function () {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
 
     signInWithEmailAndPassword(auth, email, pass)
-      .catch(err => alert(err.message));
+      .catch(err => alert("Error: " + err.message));
   };
 
+  // Detectar sesión
   onAuthStateChanged(auth, user => {
     if (user) {
       document.getElementById("login").style.display = "none";
@@ -55,6 +56,7 @@
     }
   });
 
+  // Cargar datos
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
