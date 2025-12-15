@@ -66,7 +66,7 @@
     authDomain: "personas-firebase.firebaseapp.com",
     databaseURL: "https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "personas-firebase",
-    storageBucket: "personas-firebase.firebasestorage.app",
+    storageBucket: "personas-firebase.firebasedestorage.app",
     messagingSenderId: "950578634794",
     appId: "1:950578634794:web:bb1f48b283e97443d06353"
   };
@@ -99,7 +99,7 @@
     }
   });
 
-  // 🔥 Función para mostrar campos en rojo y valores en verde
+  // Función para mostrar campos en rojo y valores en verde
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
@@ -111,6 +111,7 @@
         lista.innerHTML = "<li>No data</li>";
         return;
       }
+
       for (let id in data) {
         let line = "";
         for (let key in data[id]) {
