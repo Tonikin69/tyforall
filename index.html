@@ -110,7 +110,7 @@
   const db = getDatabase(app);
 
   // 🔹 Forzar logout al cargar y persistencia solo mientras la pestaña está abierta
-  signOut(auth);
+  signOut(auth).catch(() => {}); // fuerza logout de cualquier sesión previa
   setPersistence(auth, browserSessionPersistence);
 
   // Login
@@ -130,37 +130,3 @@
 
   // Detectar sesión
   onAuthStateChanged(auth, user => {
-    if (user) {
-      document.getElementById("login").style.display = "none";
-      document.getElementById("titulo").innerText = "Personas registradas";
-      cargarDatos();
-    }
-  });
-
-  // Cargar datos
-  function cargarDatos() {
-    const lista = document.getElementById("lista");
-    lista.style.display = "block";
-    lista.innerHTML = "";
-
-    get(ref(db, "personas")).then(snapshot => {
-      const data = snapshot.val();
-      if (!data) {
-        lista.innerHTML = "<li>No hay datos aún</li>";
-        return;
-      }
-      for (let id in data) {
-        const p = data[id];
-        lista.innerHTML += `
-          <li>
-            <span>${p.nombre}</span>
-            <span class="edad">${p.edad} años</span>
-          </li>
-        `;
-      }
-    });
-  }
-</script>
-
-</body>
-</html>
