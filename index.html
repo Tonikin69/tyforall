@@ -17,7 +17,6 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #333;
     }
 
     .card {
@@ -27,28 +26,19 @@
       max-width: 420px;
       border-radius: 12px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-      animation: fadeIn 0.6s ease;
     }
 
     h2 {
-      margin-top: 0;
       text-align: center;
       margin-bottom: 25px;
     }
 
     input {
       width: 100%;
-      padding: 12px 14px;
+      padding: 12px;
       margin-bottom: 15px;
       border-radius: 8px;
       border: 1px solid #ccc;
-      font-size: 15px;
-    }
-
-    input:focus {
-      outline: none;
-      border-color: #667eea;
-      box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
     }
 
     button {
@@ -57,16 +47,9 @@
       background: #667eea;
       border: none;
       border-radius: 8px;
-      color: #fff;
+      color: white;
       font-size: 16px;
-      font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
-    }
-
-    button:hover {
-      background: #5a67d8;
-      transform: translateY(-1px);
     }
 
     #error {
@@ -87,23 +70,17 @@
     }
 
     li {
-      padding: 10px 12px;
-      border-radius: 6px;
       background: #f4f6ff;
+      padding: 10px;
+      border-radius: 6px;
       margin-bottom: 8px;
       display: flex;
       justify-content: space-between;
-      font-size: 14px;
     }
 
     .edad {
-      font-weight: 600;
+      font-weight: bold;
       color: #667eea;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
@@ -125,8 +102,13 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } 
-    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { 
+    getAuth,
+    signInWithEmailAndPassword,
+    onAuthStateChanged,
+    setPersistence,
+    browserSessionPersistence
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, get } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -143,6 +125,9 @@
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
+
+  // 🔐 CLAVE: NO guardar sesión al recargar
+  setPersistence(auth, browserSessionPersistence);
 
   window.login = function () {
     const email = document.getElementById("email").value;
