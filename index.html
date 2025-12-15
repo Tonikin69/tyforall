@@ -6,114 +6,36 @@
 <title>Personas | Hacker Login</title>
 
 <style>
-  * {
-    box-sizing: border-box;
-    font-family: Consolas, monospace;
-  }
+  * { box-sizing: border-box; font-family: Consolas, monospace; }
+  body { margin:0; min-height:100vh; background:black; overflow:hidden; }
+  canvas { position: fixed; inset:0; z-index:0; }
 
-  body {
-    margin: 0;
-    min-height: 100vh;
-    background: black;
-    overflow: hidden;
-  }
-
-  canvas {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-  }
-
-  .center {
-    position: fixed;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1;
-  }
-
+  .center { position:fixed; inset:0; display:flex; align-items:center; justify-content:center; z-index:1; }
   .card {
-    background: rgba(0, 0, 0, 0.88);
+    background: rgba(0,0,0,0.88);
     border: 1px solid #00ff00;
     color: #00ff00;
-    padding: 30px;
-    width: 100%;
-    max-width: 500px;
-    border-radius: 10px;
-    box-shadow: 0 0 30px #00ff00;
+    padding:30px;
+    width:100%;
+    max-width:500px;
+    border-radius:10px;
+    box-shadow:0 0 30px #00ff00;
   }
 
-  h2 {
-    text-align: center;
-    margin-bottom: 25px;
-    letter-spacing: 2px;
-  }
-
-  input {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 15px;
-    background: black;
-    border: 1px solid #00ff00;
-    color: #00ff00;
-    border-radius: 6px;
-    font-size: 15px;
-  }
-
-  input::placeholder {
-    color: #00aa00;
-  }
-
-  button {
-    width: 100%;
-    padding: 12px;
-    background: #00ff00;
-    border: none;
-    color: black;
-    font-weight: bold;
-    cursor: pointer;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-
-  button:hover {
-    background: #00cc00;
-  }
-
-  #error {
-    display: none;
-    margin-top: 12px;
-    padding: 10px;
-    background: #220000;
-    border: 1px solid red;
-    color: red;
-    text-align: center;
-    border-radius: 6px;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 15px;
-    max-height: 300px;
-    overflow-y: auto;
-  }
-
-  li {
-    border-bottom: 1px solid #00ff00;
-    padding: 8px 0;
-    font-size: 14px;
-  }
-
-  li strong {
-    color: #7CFC00;
-  }
+  h2 { text-align:center; margin-bottom:25px; letter-spacing:2px; }
+  input { width:100%; padding:12px; margin-bottom:15px; background:black; border:1px solid #00ff00; color:#00ff00; border-radius:6px; font-size:15px; }
+  input::placeholder { color:#00aa00; }
+  button { width:100%; padding:12px; background:#00ff00; border:none; color:black; font-weight:bold; cursor:pointer; border-radius:6px; font-size:16px; }
+  button:hover { background:#00cc00; }
+  #error { display:none; margin-top:12px; padding:10px; background:#220000; border:1px solid red; color:red; text-align:center; border-radius:6px; }
+  ul { list-style:none; padding:0; margin-top:15px; max-height:300px; overflow-y:auto; }
+  li { border-bottom:1px solid #00ff00; padding:8px 0; font-size:14px; }
+  .campo { color: #ff3300; font-weight:bold; }  /* campo en rojo */
+  .valor { color: #00ff00; }                  /* valor en verde */
 </style>
 </head>
 
 <body>
-
 <canvas id="matrix"></canvas>
 
 <div class="center">
@@ -153,15 +75,13 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // Forzar siempre login
   signOut(auth).catch(() => {});
   setPersistence(auth, browserSessionPersistence);
 
-  window.login = function () {
+  window.login = function() {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
     const error = document.getElementById("error");
-
     error.style.display = "none";
 
     signInWithEmailAndPassword(auth, email, pass)
@@ -179,6 +99,7 @@
     }
   });
 
+  // 🔥 Función para mostrar campos en rojo y valores en verde
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
@@ -193,7 +114,7 @@
       for (let id in data) {
         let line = "";
         for (let key in data[id]) {
-          line += `<strong>${key}:</strong> ${data[id][key]} `;
+          line += `<span class="campo">${key}:</span> <span class="valor">${data[id][key]}</span> &nbsp; `;
         }
         lista.innerHTML += `<li>${line}</li>`;
       }
@@ -205,10 +126,7 @@
   const canvas = document.getElementById("matrix");
   const ctx = canvas.getContext("2d");
 
-  function resize() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-  }
+  function resize() { canvas.width=window.innerWidth; canvas.height=window.innerHeight; }
   resize();
   window.addEventListener("resize", resize);
 
@@ -218,24 +136,20 @@
   let drops = Array(columns).fill(1);
 
   function draw() {
-    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.fillStyle = "#00ff00";
+    ctx.fillStyle = "rgba(0,0,0,0.05)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle="#00ff00";
     ctx.font = fontSize + "px monospace";
 
-    for (let i = 0; i < drops.length; i++) {
-      const text = chars[Math.floor(Math.random() * chars.length)];
-      ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-      if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-        drops[i] = 0;
-      }
+    for(let i=0;i<drops.length;i++){
+      const text = chars[Math.floor(Math.random()*chars.length)];
+      ctx.fillText(text, i*fontSize, drops[i]*fontSize);
+      if(drops[i]*fontSize>canvas.height && Math.random()>0.975) drops[i]=0;
       drops[i]++;
     }
   }
 
-  setInterval(draw, 33);
+  setInterval(draw,33);
 </script>
 
 </body>
