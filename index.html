@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Personas registradas</title>
+</head>
+<body>
+  <h1>Personas registradas</h1>
+  <ul id="lista"></ul>
+
+  <script>
+    fetch("PEGAR_AQUI_LA_URL_FIREBASE")
+      .then(res => res.json())
+      .then(data => {
+        const lista = document.getElementById("lista");
+        for (let id in data) {
+          const p = data[id];
+          lista.innerHTML += `<li>${p.nombre} - ${p.edad} años</li>`;
+        }
+      });
+  </script>
+</body>
+</html>
