@@ -8,29 +8,35 @@
 
 <h2 id="titulo">Login</h2>
 
+<!-- Formulario de login -->
 <div id="login">
   <input id="email" placeholder="Email"><br><br>
   <input id="password" type="password" placeholder="Contraseña"><br><br>
   <button onclick="login()">Entrar</button>
 </div>
 
+<!-- Lista de personas (solo visible tras login) -->
 <ul id="lista" style="display:none;"></ul>
 
 <script type="module">
+  // Importar Firebase
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getDatabase, ref, get } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+  // Configuración de Firebase con tu URL
   const firebaseConfig = {
     databaseURL: "https://personas-firebase-default-rtdb.europe-west1.firebasedatabase.app"
   };
 
+  // Inicializar Firebase
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getDatabase(app);
 
+  // Función de login
   window.login = function () {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
@@ -39,14 +45,17 @@
       .catch(err => alert("Login incorrecto"));
   };
 
+  // Detectar cambios en el estado de login
   onAuthStateChanged(auth, user => {
     if (user) {
+      // Ocultar formulario y mostrar título y lista
       document.getElementById("login").style.display = "none";
       document.getElementById("titulo").innerText = "Personas registradas";
       cargarDatos();
     }
   });
 
+  // Función para cargar los datos de la base de datos
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
@@ -54,6 +63,10 @@
 
     get(ref(db, "personas")).then(snapshot => {
       const data = snapshot.val();
+      if (!data) {
+        lista.innerHTML = "<li>No hay datos aún</li>";
+        return;
+      }
       for (let id in data) {
         const p = data[id];
         lista.innerHTML += `<li>${p.nombre} - ${p.edad} años</li>`;
