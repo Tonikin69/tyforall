@@ -17,7 +17,7 @@
     color: #00ff00;
     padding:30px;
     width:100%;
-    max-width:500px;
+    max-width:800px;
     border-radius:10px;
     box-shadow:0 0 30px #00ff00;
   }
@@ -28,8 +28,10 @@
   button { width:100%; padding:12px; background:#00ff00; border:none; color:black; font-weight:bold; cursor:pointer; border-radius:6px; font-size:16px; }
   button:hover { background:#00cc00; }
   #error { display:none; margin-top:12px; padding:10px; background:#220000; border:1px solid red; color:red; text-align:center; border-radius:6px; }
-  ul { list-style:none; padding:0; margin-top:15px; max-height:300px; overflow-y:auto; }
-  li { border-bottom:1px solid #00ff00; padding:8px 0; font-size:14px; }
+
+  table { width:100%; border-collapse: collapse; margin-top:15px; display:none; color:#00ff00; }
+  th, td { border:1px solid #00ff00; padding:8px; font-size:14px; text-align:left; }
+  th { background: rgba(0,255,0,0.1); }
   .campo { color: #ff3300; font-weight:bold; }  /* campo en rojo */
   .valor { color: #00ff00; }                  /* valor en verde */
 </style>
@@ -49,7 +51,18 @@
       <div id="error"></div>
     </div>
 
-    <ul id="lista" style="display:none;"></ul>
+    <table id="tabla">
+      <thead>
+        <tr>
+          <th>Usuario</th>
+          <th>Fecha</th>
+          <th>CPU</th>
+          <th>RAM (GB)</th>
+          <th>GPU</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
   </div>
 </div>
 
@@ -99,25 +112,28 @@
     }
   });
 
-  // Función para mostrar campos en rojo y valores en verde
   function cargarDatos() {
-    const lista = document.getElementById("lista");
-    lista.style.display = "block";
-    lista.innerHTML = "";
+    const tabla = document.getElementById("tabla");
+    const tbody = tabla.querySelector("tbody");
+    tabla.style.display = "table";
+    tbody.innerHTML = "";
 
     get(ref(db, "personas")).then(snapshot => {
       const data = snapshot.val();
       if (!data) {
-        lista.innerHTML = "<li>No data</li>";
+        tbody.innerHTML = "<tr><td colspan='5'>No hay datos</td></tr>";
         return;
       }
 
       for (let id in data) {
-        let line = "";
-        for (let key in data[id]) {
-          line += `<span class="campo">${key}:</span> <span class="valor">${data[id][key]}</span> &nbsp; `;
-        }
-        lista.innerHTML += `<li>${line}</li>`;
+        const p = data[id];
+        tbody.innerHTML += `<tr>
+          <td><span class="campo">usuario:</span> <span class="valor">${p.usuario||""}</span></td>
+          <td><span class="campo">fecha:</span> <span class="valor">${p.fecha||""}</span></td>
+          <td><span class="campo">cpu:</span> <span class="valor">${p.cpu||""}</span></td>
+          <td><span class="campo">ram:</span> <span class="valor">${p.ram_gb||""}</span></td>
+          <td><span class="campo">gpu:</span> <span class="valor">${p.gpu||""}</span></td>
+        </tr>`;
       }
     });
   }
