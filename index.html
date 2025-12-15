@@ -2,19 +2,114 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Login Personas</title>
+  <title>Personas | Login</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #333;
+    }
+
+    .card {
+      background: #fff;
+      padding: 30px;
+      width: 100%;
+      max-width: 420px;
+      border-radius: 12px;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+      animation: fadeIn 0.6s ease;
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+      margin-bottom: 25px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      margin-bottom: 15px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    input:focus {
+      outline: none;
+      border-color: #667eea;
+      box-shadow: 0 0 0 2px rgba(102,126,234,0.2);
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #667eea;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    button:hover {
+      background: #5a67d8;
+      transform: translateY(-1px);
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #f4f6ff;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    .edad {
+      font-weight: 600;
+      color: #667eea;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
 </head>
+
 <body>
 
-<h2 id="titulo">Login</h2>
+<div class="card">
+  <h2 id="titulo">Login</h2>
 
-<div id="login">
-  <input id="email" placeholder="Email"><br><br>
-  <input id="password" type="password" placeholder="Contraseña"><br><br>
-  <button onclick="login()">Entrar</button>
+  <div id="login">
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Contraseña">
+    <button onclick="login()">Entrar</button>
+  </div>
+
+  <ul id="lista" style="display:none;"></ul>
 </div>
-
-<ul id="lista" style="display:none;"></ul>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -23,7 +118,6 @@
   import { getDatabase, ref, get } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-  // 🔐 TU CONFIGURACIÓN REAL DE FIREBASE
   const firebaseConfig = {
     apiKey: "AIzaSyAqRKw0f831pD_8R-AMX2vJJY4M5mpBz6o",
     authDomain: "personas-firebase.firebaseapp.com",
@@ -38,7 +132,6 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // Login
   window.login = function () {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
@@ -47,7 +140,6 @@
       .catch(err => alert("Error: " + err.message));
   };
 
-  // Detectar sesión
   onAuthStateChanged(auth, user => {
     if (user) {
       document.getElementById("login").style.display = "none";
@@ -56,7 +148,6 @@
     }
   });
 
-  // Cargar datos
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
@@ -70,7 +161,12 @@
       }
       for (let id in data) {
         const p = data[id];
-        lista.innerHTML += `<li>${p.nombre} - ${p.edad} años</li>`;
+        lista.innerHTML += `
+          <li>
+            <span>${p.nombre}</span>
+            <span class="edad">${p.edad} años</span>
+          </li>
+        `;
       }
     });
   }
