@@ -69,10 +69,21 @@
       transform: translateY(-1px);
     }
 
+    #error {
+      margin-top: 15px;
+      padding: 10px;
+      border-radius: 6px;
+      background: #ffe6e6;
+      color: #b00020;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
     ul {
       list-style: none;
       padding: 0;
-      margin-top: 10px;
+      margin-top: 15px;
     }
 
     li {
@@ -106,6 +117,7 @@
     <input id="email" placeholder="Email">
     <input id="password" type="password" placeholder="Contraseña">
     <button onclick="login()">Entrar</button>
+    <div id="error"></div>
   </div>
 
   <ul id="lista" style="display:none;"></ul>
@@ -135,9 +147,15 @@
   window.login = function () {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
+    const errorDiv = document.getElementById("error");
+
+    errorDiv.style.display = "none";
 
     signInWithEmailAndPassword(auth, email, pass)
-      .catch(err => alert("Error: " + err.message));
+      .catch(() => {
+        errorDiv.innerText = "Usuario o contraseña incorrectos";
+        errorDiv.style.display = "block";
+      });
   };
 
   onAuthStateChanged(auth, user => {
