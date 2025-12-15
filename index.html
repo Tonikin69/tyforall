@@ -1,83 +1,117 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Personas | Login</title>
+<meta charset="UTF-8">
+<title>Personas | Hacker Login</title>
 
-  <style>
-    * { box-sizing: border-box; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: linear-gradient(135deg, #667eea, #764ba2);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .card {
-      background: #fff;
-      padding: 30px;
-      width: 100%;
-      max-width: 500px;
-      border-radius: 12px;
-      box-shadow: 0 15px 40px rgba(0,0,0,0.2);
-    }
-    h2 { text-align: center; margin-bottom: 25px; }
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-bottom: 15px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #667eea;
-      border: none;
-      border-radius: 8px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    #error {
-      margin-top: 15px;
-      padding: 10px;
-      border-radius: 6px;
-      background: #ffe6e6;
-      color: #b00020;
-      font-size: 14px;
-      text-align: center;
-      display: none;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-      margin-top: 15px;
-    }
-    li {
-      background: #f4f6ff;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 8px;
-      font-size: 14px;
-    }
-    li strong {
-      color: #667eea;
-      margin-right: 4px;
-    }
-  </style>
+<style>
+  * {
+    box-sizing: border-box;
+    font-family: Consolas, monospace;
+  }
+
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: black;
+  }
+
+  canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  .card {
+    position: relative;
+    z-index: 1;
+    background: rgba(0, 0, 0, 0.85);
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    padding: 30px;
+    width: 100%;
+    max-width: 500px;
+    margin: auto;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 10px;
+    box-shadow: 0 0 25px #00ff00;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+  }
+
+  input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    background: black;
+    border: 1px solid #00ff00;
+    color: #00ff00;
+    border-radius: 6px;
+  }
+
+  input::placeholder {
+    color: #00aa00;
+  }
+
+  button {
+    width: 100%;
+    padding: 12px;
+    background: #00ff00;
+    border: none;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 6px;
+  }
+
+  button:hover {
+    background: #00cc00;
+  }
+
+  #error {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background: #220000;
+    border: 1px solid red;
+    color: red;
+    text-align: center;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+  }
+
+  li {
+    border-bottom: 1px solid #00ff00;
+    padding: 8px 0;
+    font-size: 14px;
+  }
+
+  li strong {
+    color: #7CFC00;
+  }
+</style>
 </head>
 
 <body>
 
+<canvas id="matrix"></canvas>
+
 <div class="card">
-  <h2 id="titulo">Login</h2>
+  <h2 id="titulo">ACCESS REQUIRED</h2>
 
   <div id="login">
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Contraseña">
-    <button onclick="login()">Entrar</button>
+    <input id="email" placeholder="EMAIL">
+    <input id="password" type="password" placeholder="PASSWORD">
+    <button onclick="login()">LOGIN</button>
     <div id="error"></div>
   </div>
 
@@ -85,16 +119,11 @@
 </div>
 
 <script type="module">
-  import { 
-    initializeApp 
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  
-  import { 
-    getAuth, signInWithEmailAndPassword, onAuthStateChanged,
-    setPersistence, browserSessionPersistence, signOut
-  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-  
-  import { getDatabase, ref, get } 
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged,
+           setPersistence, browserSessionPersistence, signOut }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getDatabase, ref, get }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
   const firebaseConfig = {
@@ -111,35 +140,31 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // 🔹 Forzar logout al cargar y persistencia solo mientras la pestaña está abierta
   signOut(auth).catch(() => {});
   setPersistence(auth, browserSessionPersistence);
 
-  // Login
   window.login = function () {
-    const email = document.getElementById("email").value;
-    const pass = document.getElementById("password").value;
-    const errorDiv = document.getElementById("error");
+    const email = email.value;
+    const pass = password.value;
+    const error = document.getElementById("error");
 
-    errorDiv.style.display = "none";
+    error.style.display = "none";
 
     signInWithEmailAndPassword(auth, email, pass)
       .catch(() => {
-        errorDiv.innerText = "Usuario o contraseña incorrectos";
-        errorDiv.style.display = "block";
+        error.innerText = "ACCESS DENIED";
+        error.style.display = "block";
       });
   };
 
-  // Detectar sesión
   onAuthStateChanged(auth, user => {
     if (user) {
       document.getElementById("login").style.display = "none";
-      document.getElementById("titulo").innerText = "Personas registradas";
+      document.getElementById("titulo").innerText = "DATABASE ACCESS";
       cargarDatos();
     }
   });
 
-  // Cargar datos dinámicamente según todos los campos disponibles
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
@@ -148,20 +173,51 @@
     get(ref(db, "personas")).then(snapshot => {
       const data = snapshot.val();
       if (!data) {
-        lista.innerHTML = "<li>No hay datos aún</li>";
+        lista.innerHTML = "<li>No data</li>";
         return;
       }
-
       for (let id in data) {
-        const p = data[id];
-        let contenido = "";
-        for (let key of Object.keys(p)) {
-          contenido += `<strong>${key}:</strong> ${p[key]} &nbsp; `;
+        let line = "";
+        for (let key in data[id]) {
+          line += `<strong>${key}:</strong> ${data[id][key]} `;
         }
-        lista.innerHTML += `<li>${contenido}</li>`;
+        lista.innerHTML += `<li>${line}</li>`;
       }
     });
   }
+</script>
+
+<script>
+  const canvas = document.getElementById("matrix");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  const letters = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@*";
+  const fontSize = 16;
+  const columns = canvas.width / fontSize;
+  const drops = Array(Math.floor(columns)).fill(1);
+
+  function draw() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    ctx.fillStyle = "#00ff00";
+    ctx.font = fontSize + "px monospace";
+
+    drops.forEach((y, i) => {
+      const text = letters.charAt(Math.floor(Math.random() * letters.length));
+      ctx.fillText(text, i * fontSize, y * fontSize);
+
+      if (y * fontSize > canvas.height && Math.random() > 0.975) {
+        drops[i] = 0;
+      }
+      drops[i]++;
+    });
+  }
+
+  setInterval(draw, 33);
 </script>
 
 </body>
