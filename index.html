@@ -5,11 +5,7 @@
   <title>Personas | Login</title>
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    }
-
+    * { box-sizing: border-box; font-family: "Segoe UI", Roboto, Arial, sans-serif; }
     body {
       margin: 0;
       min-height: 100vh;
@@ -18,7 +14,6 @@
       align-items: center;
       justify-content: center;
     }
-
     .card {
       background: #fff;
       padding: 30px;
@@ -27,12 +22,7 @@
       border-radius: 12px;
       box-shadow: 0 15px 40px rgba(0,0,0,0.2);
     }
-
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-    }
-
+    h2 { text-align: center; margin-bottom: 25px; }
     input {
       width: 100%;
       padding: 12px;
@@ -40,7 +30,6 @@
       border-radius: 8px;
       border: 1px solid #ccc;
     }
-
     button {
       width: 100%;
       padding: 12px;
@@ -51,7 +40,6 @@
       font-size: 16px;
       cursor: pointer;
     }
-
     #error {
       margin-top: 15px;
       padding: 10px;
@@ -62,13 +50,11 @@
       text-align: center;
       display: none;
     }
-
     ul {
       list-style: none;
       padding: 0;
       margin-top: 15px;
     }
-
     li {
       background: #f4f6ff;
       padding: 10px;
@@ -77,11 +63,7 @@
       display: flex;
       justify-content: space-between;
     }
-
-    .edad {
-      font-weight: bold;
-      color: #667eea;
-    }
+    .edad { font-weight: bold; color: #667eea; }
   </style>
 </head>
 
@@ -101,14 +83,15 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
   import { 
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    setPersistence,
-    browserSessionPersistence
+    initializeApp 
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  
+  import { 
+    getAuth, signInWithEmailAndPassword, onAuthStateChanged,
+    setPersistence, browserSessionPersistence, signOut
   } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  
   import { getDatabase, ref, get } 
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
@@ -126,9 +109,11 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
 
-  // 🔐 CLAVE: NO guardar sesión al recargar
+  // 🔹 Forzar logout al cargar y persistencia solo mientras la pestaña está abierta
+  signOut(auth);
   setPersistence(auth, browserSessionPersistence);
 
+  // Login
   window.login = function () {
     const email = document.getElementById("email").value;
     const pass = document.getElementById("password").value;
@@ -143,6 +128,7 @@
       });
   };
 
+  // Detectar sesión
   onAuthStateChanged(auth, user => {
     if (user) {
       document.getElementById("login").style.display = "none";
@@ -151,6 +137,7 @@
     }
   });
 
+  // Cargar datos
   function cargarDatos() {
     const lista = document.getElementById("lista");
     lista.style.display = "block";
